@@ -590,7 +590,6 @@ components:
       properties:
         id:
           type: integer
-          format: int64
         users:
           type: array
           xml:
@@ -611,6 +610,27 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Team'
+    CalcomTeam:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: nullable
+        name:
+          type: string
+          format: nullable
+        slug:
+          type: string
+          format: nullable
+        logo:
+          type: string
+          format: nullable
+        bio:
+          type: string
+          format: nullable
+        hideBranding:
+          type: boolean
+          format: nullable
     Availability:
       type: object
       properties:
