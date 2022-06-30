@@ -8,8 +8,10 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,4 +49,5 @@ public class CalComUserService extends CalComService {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(response, CalcomUser.class);
     }
+
 }
