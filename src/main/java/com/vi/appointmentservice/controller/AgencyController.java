@@ -58,6 +58,7 @@ public class AgencyController implements AgencyApi {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -103,6 +104,7 @@ public class AgencyController implements AgencyApi {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // TODO: pass base url as environment attribute
         meetingLink.setMeetlingLink("https://calcom-develop.suchtberatung.digital/team/" + slug);
         return new ResponseEntity<>(meetingLink, HttpStatus.OK);
     }

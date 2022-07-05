@@ -46,7 +46,7 @@ public class CalComUserService extends CalComService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> map = objectMapper.convertValue(user, MultiValueMap.class);
+        // MultiValueMap<String, String> map = objectMapper.convertValue(user, MultiValueMap.class);
         JSONObject userObject = new JSONObject(user);
         log.debug("Creating calcom user: {}", userObject);
         HttpEntity<String> request = new HttpEntity<>(userObject.toString(), headers);
@@ -57,7 +57,7 @@ public class CalComUserService extends CalComService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        MultiValueMap<String, String> map = objectMapper.convertValue(user, MultiValueMap.class);
+        // MultiValueMap<String, String> map = objectMapper.convertValue(user, MultiValueMap.class);
         JSONObject userObject = new JSONObject(user);
         log.debug("Updating calcom user: {}", userObject);
         HttpEntity<String> request = new HttpEntity<>(userObject.toString(), headers);

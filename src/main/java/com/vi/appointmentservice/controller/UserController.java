@@ -1,18 +1,21 @@
 package com.vi.appointmentservice.controller;
 
 import com.vi.appointmentservice.api.model.*;
+import com.vi.appointmentservice.generated.api.controller.ApiUtil;
 import com.vi.appointmentservice.generated.api.controller.UserApi;
 import com.vi.appointmentservice.model.CalcomUserToUser;
 import com.vi.appointmentservice.repository.CalcomUserToUserRepository;
 import com.vi.appointmentservice.repository.TeamToAgencyRepository;
 import com.vi.appointmentservice.service.CalComTeamService;
 import com.vi.appointmentservice.service.CalComUserService;
+import com.vi.appointmentservice.service.CalComBookingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for user API operations.
@@ -31,15 +35,23 @@ public class UserController implements UserApi {
 
     CalComUserService calComUserService;
     CalComTeamService calComTeamService;
+    CalComBookingService calComBookingService;
     CalcomUserToUserRepository calcomUserToUserRepository;
 
     TeamToAgencyRepository teamToAgencyRepository;
 
 
     @Autowired
-    public UserController(CalComUserService calComUserService, CalComTeamService calComTeamService, CalcomUserToUserRepository calcomUserToUserRepository, TeamToAgencyRepository teamToAgencyRepository) {
+    public UserController(
+            CalComUserService calComUserService,
+            CalComTeamService calComTeamService,
+            CalComBookingService calComBookingService,
+            CalcomUserToUserRepository calcomUserToUserRepository,
+            TeamToAgencyRepository teamToAgencyRepository
+    ) {
         this.calComUserService = calComUserService;
         this.calComTeamService = calComTeamService;
+        this.calComBookingService = calComBookingService;
         this.calcomUserToUserRepository = calcomUserToUserRepository;
         this.teamToAgencyRepository = teamToAgencyRepository;
     }
@@ -115,7 +127,18 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<List<CalcomBooking>> getAllBookingsOfUser(String userId) {
-        return UserApi.super.getAllBookingsOfUser(userId);
+        try {
+            Long calcomUserId = calcomUserToUserRepository.findByUserId(userId).getCalComUserId();
+
+            List<CalcomBooking> bookings = calComBookingService.getBookings().stream()
+                    .filter(o -> o.getUserId().equals(calcomUserId))
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(bookings, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

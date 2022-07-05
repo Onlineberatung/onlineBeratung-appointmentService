@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface TeamToAgencyRepository extends JpaRepository<TeamToAgency, Long> {
     List<TeamToAgency> findByAgencyId(Long agencyId);
+
 }
