@@ -1,17 +1,16 @@
-package com.vi.appointmentservice.service;
+package com.vi.appointmentservice.api.service.onlineberatung;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vi.appointmentservice.adapters.keycloak.dto.KeycloakLoginResponseDTO;
+import com.vi.appointmentservice.api.exception.httpresponses.InternalServerErrorException;
 import com.vi.appointmentservice.port.out.IdentityClient;
-import com.vi.appointmentservice.service.securityheader.SecurityHeaderSupplier;
+import com.vi.appointmentservice.api.service.securityheader.SecurityHeaderSupplier;
 import com.vi.appointmentservice.useradminservice.generated.ApiClient;
 import com.vi.appointmentservice.useradminservice.generated.web.AdminUserControllerApi;
 import com.vi.appointmentservice.useradminservice.generated.web.model.AskerResponseDTO;
 import com.vi.appointmentservice.useradminservice.generated.web.model.ConsultantDTO;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+//TODO: what do you think that we move all onlineberatung services like, user, useradmin, messages
+// to one subpackage of service package
+//TODO: and all calcom services to calcom package. classes would not have calcom prefix than
 public class AdminUserService {
 
   @Qualifier("adminUser")
@@ -52,13 +54,17 @@ public class AdminUserService {
   @Value("${keycloakService.technical.password}")
   private String keycloakTechnicalPassword;
 
-  public ConsultantDTO getConsultantById(String consultantId) throws JsonProcessingException {
+  public ConsultantDTO getConsultantById(String consultantId) {
     addTechnicalUserHeaders(adminUserControllerApi.getApiClient());
     String consultantResponse = new JSONObject(
         adminUserControllerApi.getConsultant(consultantId)).getJSONObject("embedded").toString();
     ObjectMapper mapper = new ObjectMapper().configure(
         DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    return mapper.readValue(consultantResponse, ConsultantDTO.class);
+    try {
+      return mapper.readValue(consultantResponse, ConsultantDTO.class);
+    } catch (JsonProcessingException e) {
+      throw new InternalServerErrorException("Could not deserialize consultant response from userService");
+    }
   }
 
   public AskerResponseDTO getAskerById(String askerId) {
